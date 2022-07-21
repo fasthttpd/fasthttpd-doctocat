@@ -1,0 +1,28 @@
+---
+title: CLI
+---
+
+## Usage
+
+```sh
+FastHttpd is a HTTP server using valyala/fasthttp.
+
+Usage:
+  fasthttpd [flags] [query] ([file...])
+
+Flags:
+  -e value
+    	edit expression (eg. -e KEY=VALUE)
+  -f string
+    	configuration file
+  -h	help for fasthttpd
+  -v	print version
+
+Examples
+
+% fasthttpd -f examples/config.minimal.yaml
+% fasthttpd -f examples/config.minimal.yaml -e accessLog.output=stdout
+% fasthttpd -e root=./examples/public -e listen=0.0.0.0:8080
+```
+
+The fashttpd can override some of the values in config.yaml with the `-e` option via [jarxorg/tree](https://github.com/jarxorg/tree).

@@ -1,0 +1,45 @@
+---
+title: Getting started
+---
+
+This guide will walk you through serving static files. 
+
+## 1. Configuration
+
+The following is a minimal configuration built into fasthttpd.
+
+```yaml
+host: localhost
+listen: ':8080'
+root: ./public
+log:
+  output: stderr
+
+handlers:
+  'static':
+    type: fs
+    indexNames: [index.html]
+
+routes:
+  - path: /
+    handler: static
+```
+
+## 2. Start fasthttpd
+
+Start fasthttpd with a partial overwrite of the built-in configuration.
+Then you can hit [http://localhost:8080/](http://localhost:8080/) in your browser.
+
+```sh
+fashttpd -e root=.
+```
+
+Or specify your configuration file.
+
+```sh
+fashttpd -f config.yaml
+```
+
+## What's next?
+
+Check out the [installation](/installation) guide.
