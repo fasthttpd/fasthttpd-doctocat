@@ -1,8 +1,9 @@
 module.exports = {
   siteMetadata: {
-    title: 'Doctocat Template',
-    shortName: 'Template',
-    description: 'My site description',
+    title: 'FastHttpd',
+    shortName: 'FastHttpd',
+    description: 'A lightweight http server using valyala/fasthttp',
+    imageUrl: '',
   },
   plugins: ['@primer/gatsby-theme-doctocat'],
 }

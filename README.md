@@ -1,5 +1,6 @@
-# Doctocat Template
+# FastHttpd - primer/doctocat
 
+[https://fasthttpd.org/](https://fasthttpd.org/) generated from this repository.
 
 ## Getting Started
 
