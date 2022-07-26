@@ -1,6 +1,7 @@
 {
-  "name": "FastHttpd",
+  "name": "fasthttpd-doctocat",
   "repository": "fasthttpd/fasthttpd-doctocat",
+  "license": "MIT",
   "version": "1.0.0",
   "scripts": {
     "develop": "gatsby develop",
@@ -9,11 +10,8 @@
   },
   "dependencies": {
     "@primer/gatsby-theme-doctocat": "^4.0.0",
-    "gatsby": "^2.13.25",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0"
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-logical-assignment-operators": "^7.18.9"
+    "gatsby": "^2.32.13",
+    "react": "^16.9.56",
+    "react-dom": "^16.9.56"
   }
 }
