@@ -185,6 +185,7 @@ listen: ':8080'
 ## Root
 
 Path to the root directory to serve files from.
+`./` indicates the directory where config.yaml is located.
 
 ```yaml
 root: ./public
@@ -192,14 +193,30 @@ root: ./public
 
 ## Server
 
+Server represents settings for fasthttp.Server.
+
 ```yaml
 server:
   name: fasthttpd
   readBufferSize: 4096
   writeBufferSize: 4096
+  readTimeout: 60s
+  writeTimeout: 60s
 ```
 
+| Key | Description |
+| --- | ----------- |
+| name | Server name for sending in response headers |
+| readBufferSize | Per-connection buffer size for requests' reading. This also limits the maximum header size. This also limits the maximum header size. Increase this buffer if your clients send multi-KB RequestURIs and/or multi-KB headers (for example, BIG cookies). Default buffer size is used if not set. |
+| writeBufferSize | Per-connection buffer size for responses' writing. Default buffer size is used if not set. |
+| readTimeout | The amount of time allowed to read the full request including body. The connection's read deadline is reset when the connection opens, or for keep-alive connections after the first byte has been read. By default request read timeout is unlimited. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h". |
+| writeTimeout | The maximum duration before timing out writes of the response. It is reset after the request handler has returned. By default response write timeout is unlimited. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h". |
+
+Other string, bool and numbers can be set. See [fashttp/server.go](https://github.com/valyala/fasthttp/blob/master/server.go) for details.
+
 ## Log
+
+Log represents settings for logging.
 
 ```yaml
 log:
@@ -208,9 +225,27 @@ log:
   flags: [date, time]
   rotation:
     maxSize: 100
+    maxBackups: 14
+    maxAge: 28
+    compress: true
+    localTime: true
 ```
 
+| Key | Description |
+| --- | ----------- |
+| output | Output file path. `stdout` and `stderr` are special strings that indicate standard output and standard error output, respectively. |
+| flags | For example, flags [date, time] produce `2009/01/23 01:23:23 message` |
+| rotation.maxSize | The maximum size in megabytes of the log file before it gets rotated. It defaults to 100 megabytes. |
+| rotation.maxBackups | The maximum number of days to retain old log files based on the timestamp encoded in their filename.  Note that a day is defined as 24 hours and may not exactly correspond to calendar days due to daylight savings, leap seconds, etc. The default is not to remove old log files based on age.|
+| rotation.maxAge | The maximum number of old log files to retain.  The default is to retain all old log files (though MaxAge may still cause them to get deleted.) |
+| rotation.compress | Compress determines if the rotated log files should be compressed using gzip. The default is not to perform compression. |
+| rotation.localTime | LocalTime determines if the time used for formatting the timestamps in backup files is the computer's local time.  The default is to use UTC time. |
+
+The rotation is based on [natefinch/lumberjack](https://github.com/natefinch/lumberjack).
+
 ## AccessLog
+
+AccessLog represents settings for the access logging.
 
 ```yaml
 accessLog:
@@ -224,7 +259,21 @@ accessLog:
     localTime: true
 ```
 
+| Key | Description |
+| --- | ----------- |
+| output | Output file path. `stdout` and `stderr` are special strings that indicate standard output and standard error output, respectively. |
+| format | The characteristics of the request itself are logged by placing "%" directives in the format string [Apache Custom Log Formats](https://httpd.apache.org/docs/2.4/en/mod/mod_log_config.html) |
+| rotation.maxSize | The maximum size in megabytes of the log file before it gets rotated. It defaults to 100 megabytes. |
+| rotation.maxBackups | The maximum number of days to retain old log files based on the timestamp encoded in their filename.  Note that a day is defined as 24 hours and may not exactly correspond to calendar days due to daylight savings, leap seconds, etc. The default is not to remove old log files based on age.|
+| rotation.maxAge | The maximum number of old log files to retain.  The default is to retain all old log files (though MaxAge may still cause them to get deleted.) |
+| rotation.compress | Compress determines if the rotated log files should be compressed using gzip. The default is not to perform compression. |
+| rotation.localTime | LocalTime determines if the time used for formatting the timestamps in backup files is the computer's local time.  The default is to use UTC time. |
+
+The rotation is based on [natefinch/lumberjack](https://github.com/natefinch/lumberjack).
+
 ## Filters
+
+Any named filter can be defined for filters.
 
 ```yaml
 filters:
@@ -244,7 +293,37 @@ filters:
         'Cache-Control': 'private, max-age=3600'
 ```
 
+The following filter types are supported.
+
+- basicAuth - Provides the basic access authentication. 
+- header - Customize request and response headers. 
+
+### BasicAuth
+
+BasicAuth represents settings for the basic access authentication.
+
+| Key | Description |
+| --- | ----------- |
+| users[].name | User name |
+| users[].secret | Plain secret |
+| usersFile | Path to users file. Refer to [testdata/users.yaml](https://github.com/fasthttpd/fasthttpd/blob/main/pkg/config/testdata/users.yaml) |
+
+### Header
+
+Header represents settings for customizing request and response headers.
+
+| Key | Description |
+| --- | ----------- |
+| request.set | The header-value mapping. If the same header exists, it is overwritten. |
+| request.add | The header-value mapping |
+| request.del | The list of headers |
+| response.set | The header-value mapping If the same header exists, it is overwritten. |
+| response.add | The header-value mapping |
+| response.del | The list of headers |
+
 ## Handlers
+
+Any named handler can be defined for handlers.
 
 ```yaml
 handlers:
@@ -267,6 +346,8 @@ handlers:
     url: http://localhost:9000/
 ```
 
+The following handler types are supported.
+
 - fs - Serve static files from the local filesystem
 - content - Serve a in-memory content
 - proxy - Proxy to specified url
@@ -277,12 +358,12 @@ FS represents settings for request handler serving static files from the local f
 
 | Key | Description |
 | --- | ----------- |
-| root | Path to the root directory to serve files from. |
+| root | Path to the root directory to serve files from. If omitted, the top-level root is used. |
 | indexNames | List of index file names to try opening during directory access. |
 | generateIndexPages | Index pages for directories without files matching IndexNames are automatically generated if set. |
 | compress | Transparently compresses responses if set to true. |
 
-Other string, bool and numbers can be set. See [fashttp/fs.go](https://github.com/valyala/fasthttp/blob/f3513ccc593abf5b4a6d34b9a8498f83f4f5b983/fs.go#L227) for details.
+Other string, bool and numbers can be set. See [fashttp/fs.go](https://github.com/valyala/fasthttp/blob/master/fs.go) for details.
 
 ### Content
 
