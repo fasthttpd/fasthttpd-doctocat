@@ -166,6 +166,10 @@ handlers:
 routes:
   - path: /
     handler: backend
+
+---
+
+include: conf.d/*.yaml
 ```
 
 ## Host
@@ -438,8 +442,8 @@ ssl:
 
 ```yaml
 ssl:
-  autoCert:
-    enable: true
+  autoCert: true
+  autoCertCacheDir: /etc/fasthttpd/cache
 ```
 
 ## Virtual hosts
@@ -452,4 +456,10 @@ listen: ':80'
 ---
 host: other.example.com
 listen: ':80'
+```
+
+## Include
+
+```yaml
+include: /etc/fasthttpd/conf.d/*.yaml
 ```
