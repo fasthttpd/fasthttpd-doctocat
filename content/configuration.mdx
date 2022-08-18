@@ -354,7 +354,8 @@ The following handler types are supported.
 
 - fs - Serve static files from the local filesystem
 - content - Serve a in-memory content
-- proxy - Proxy to specified url
+- proxy - Proxy to a backend
+- balancer - Proxy to multiple backends with some algorithm
 
 ### FS
 
@@ -380,11 +381,42 @@ Content represents settings for serving a in-memory content.
 
 ### Proxy
 
-Proxy represents settings for proxy the backend.
+Proxy represents settings for proxy the single backend.
 
 | Key | Description |
 | --- | ----------- |
 | url | Backend URL |
+
+<Note>If you want to proxy multiple backends, use Balancer.</Note>
+
+### Balancer
+
+Balancer represents settings for proxy the multiple backends.
+This handler using [zehuamama/balancer](https://github.com/zehuamama/balancer).
+
+| Key | Description |
+| --- | ----------- |
+| urls | Backend URLs |
+| algorithm | ip-hash, consistent-hash, p2c, random, round-robin, least-load, bounded |
+| healthCheckInterval | health-check interval (seconds) |
+
+<Note>If Proxy supports multiple backends, Balancer may be deprecated.</Note>
+
+```yaml
+# Balancer example
+handlers:
+  'backend':
+    type: balancer
+    algorithm: round-robin
+    healthCheckInterval: 5
+    urls:
+      - http://localhost:9000/
+      - http://localhost:9001/
+      - http://localhost:9002/
+routes:
+  - path: /
+    handler: backend
+```
 
 ## Routes
 
