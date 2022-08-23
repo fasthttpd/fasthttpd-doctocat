@@ -275,6 +275,20 @@ accessLog:
 
 The rotation is based on [natefinch/lumberjack](https://github.com/natefinch/lumberjack).
 
+## ErrorPages
+
+```yaml
+# Define custom error pages (x matches [0-9])
+errorPages:
+  '404': /err/404.html
+  '5xx': /err/5xx.html
+```
+
+| Key | Description |
+| --- | ----------- |
+| root | (Optional) Override root |
+| (http status) | Path to custom error page. A http status text can be contain 'x' as wildcard. (eg. '5xx', '40x') |
+
 ## Filters
 
 Any named filter can be defined for filters.
